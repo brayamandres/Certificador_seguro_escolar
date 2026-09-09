@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git/
+.gitignore
+uploads/*
+certificados_word/*
+certificados_pdf/*
+archivos_zip/*
+.venv/
+env/
+venv/
+.idea/
+.vscode/

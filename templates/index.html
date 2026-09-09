@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Certificados de Seguro Escolar</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 40px 20px;
+            color: #333;
+        }
+        .page {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+        }
+        .btn-plantilla {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #ffffff;
+            color: #16a085;
+            border: 1.5px solid #16a085;
+            padding: 9px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-plantilla:hover {
+            background-color: #16a085;
+            color: #ffffff;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            text-align: center;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .flash-message {
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            border-left: 5px solid;
+        }
+        .flash-success {
+            background-color: #eafaf1;
+            border-left-color: #2ecc71;
+            color: #1e8449;
+        }
+        .flash-error {
+            background-color: #fdecea;
+            border-left-color: #e74c3c;
+            color: #c0392b;
+        }
+        .flash-warning {
+            background-color: #fef5e7;
+            border-left-color: #e67e22;
+            color: #b9770e;
+        }
+        .flash-message strong { display: block; margin-bottom: 2px; }
+
+        .upload-box {
+            border: 2px dashed #bdc3c7;
+            padding: 25px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: #fafafa;
+            margin-bottom: 20px;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        .upload-box.dragover {
+            border-color: #3498db;
+            background-color: #eaf4fc;
+        }
+        .upload-box.file-error {
+            border-color: #e74c3c;
+            background-color: #fdecea;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        .file-label:hover {
+            background-color: #2980b9;
+        }
+        .drop-hint {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+        #file-name {
+            margin-top: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        #file-name.ok::before { content: "✅ "; }
+        #file-error {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #e74c3c;
+            font-weight: bold;
+            display: none;
+        }
+        .btn-submit {
+            width: 100%;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-submit:hover:not(:disabled) {
+            background-color: #27ae60;
+        }
+        .btn-submit:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .download-section {
+            margin-top: 30px;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 20px;
+        }
+        .btn-download {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+        .btn-word { background-color: #2b579a; }
+        .btn-pdf { background-color: #c0392b; }
+        .btn-download:hover { opacity: 0.9; }
+        #loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-align: center;
+            margin-top: 15px;
+            color: #e67e22;
+            font-weight: bold;
+        }
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 3px solid #f3d9b1;
+            border-top-color: #e67e22;
+            border-radius: 50%;
+            animation: girar 0.8s linear infinite;
+        }
+        @keyframes girar {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="top-bar">
+        <a href="/descargar-plantilla" class="btn-plantilla" title="Descarga la planilla Excel con el formato correcto">
+            📥 Descargar plantilla Excel
+        </a>
+    </div>
+
+    <div class="container">
+        <h2>Generador de Certificados</h2>
+        <p class="subtitle">Sube tu planilla Excel para generar masivamente los documentos</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              {% set css_class = "flash-error" if category == "error" else ("flash-warning" if category == "warning" else "flash-success") %}
+              {% set etiqueta = "Error" if category == "error" else ("Atención" if category == "warning" else "Listo") %}
+              <div class="flash-message {{ css_class }}">
+                <strong>{{ etiqueta }}</strong>{{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form id="form-procesar" action="/procesar" method="POST" enctype="multipart/form-data">
+            <div class="upload-box" id="upload-box">
+                <label for="archivo_excel" class="file-label">Seleccionar Excel (.xlsx)</label>
+                <input type="file" id="archivo_excel" name="archivo_excel" accept=".xlsx,.xls">
+                <div class="drop-hint">o arrastra y suelta el archivo aquí</div>
+                <div id="file-name">Ningún archivo seleccionado</div>
+                <div id="file-error">El archivo debe ser un Excel válido (.xlsx o .xls).</div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btn-generar" disabled>Procesar y Generar Documentos</button>
+        </form>
+
+        <div id="loading">
+            <div class="spinner"></div>
+            <span>Procesando planilla y convirtiendo a PDF... Por favor espera.</span>
+        </div>
+
+        {% if pdf_listo %}
+        <div class="download-section">
+            <h3>Descargar Certificados</h3>
+            <a href="/descargar/pdf" class="btn-download btn-pdf">📥 Descargar ZIP con Certificados PDF (.pdf)</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    const inputFile = document.getElementById("archivo_excel");
+    const uploadBox = document.getElementById("upload-box");
+    const fileNameEl = document.getElementById("file-name");
+    const fileErrorEl = document.getElementById("file-error");
+    const btnGenerar = document.getElementById("btn-generar");
+    const form = document.getElementById("form-procesar");
+    const loading = document.getElementById("loading");
+
+    const EXTENSIONES_VALIDAS = [".xlsx", ".xls"];
+
+    function esExcelValido(nombre) {
+        const n = nombre.toLowerCase();
+        return EXTENSIONES_VALIDAS.some(ext => n.endsWith(ext));
+    }
+
+    function actualizarEstado(archivo) {
+        if (!archivo) {
+            fileNameEl.textContent = "Ningún archivo seleccionado";
+            fileNameEl.classList.remove("ok");
+            fileErrorEl.style.display = "none";
+            uploadBox.classList.remove("file-error");
+            btnGenerar.disabled = true;
+            return;
+        }
+
+        if (!esExcelValido(archivo.name)) {
+            fileNameEl.textContent = archivo.name;
+            fileNameEl.classList.remove("ok");
+            fileErrorEl.style.display = "block";
+            uploadBox.classList.add("file-error");
+            btnGenerar.disabled = true;
+            return;
+        }
+
+        fileNameEl.textContent = archivo.name;
+        fileNameEl.classList.add("ok");
+        fileErrorEl.style.display = "none";
+        uploadBox.classList.remove("file-error");
+        btnGenerar.disabled = false;
+    }
+
+    inputFile.addEventListener("change", () => {
+        actualizarEstado(inputFile.files[0]);
+    });
+
+    ["dragenter", "dragover"].forEach(evento => {
+        uploadBox.addEventListener(evento, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadBox.classList.add("dragover");
+        });
+    });
+
+    ["dragleave", "drop"].forEach(evento => {
+        uploadBox.addEventListener(evento, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadBox.classList.remove("dragover");
+        });
+    });
+
+    uploadBox.addEventListener("drop", (e) => {
+        const archivos = e.dataTransfer.files;
+        if (archivos.length > 0) {
+            inputFile.files = archivos;
+            actualizarEstado(archivos[0]);
+        }
+    });
+
+    form.addEventListener("submit", (e) => {
+        if (btnGenerar.disabled || !inputFile.files[0]) {
+            e.preventDefault();
+            return;
+        }
+        btnGenerar.disabled = true;
+        btnGenerar.textContent = "Procesando...";
+        loading.style.display = "flex";
+    });
+</script>
+
+</body>
+</html>
